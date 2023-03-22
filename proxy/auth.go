@@ -78,6 +78,8 @@ func NewAuthRequestInterceptor(prx *httputil.ReverseProxy) http.HandlerFunc {
 			patchedRequest, err := http.NewRequest(r.Method, r.RequestURI, bytes.NewReader(patchedPayload))
 			if err != nil {
 				log.Error().Err(err).Msg("could not build patched request")
+				w.WriteHeader(http.StatusInternalServerError)
+				return
 			}
 			patchedRequest.Header.Set("Content-Length", fmt.Sprintf("%d", len(patchedPayload)))
 			prx.ServeHTTP(w, patchedRequest)
